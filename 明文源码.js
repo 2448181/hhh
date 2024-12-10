@@ -1,9 +1,7 @@
-// <!--GAMFC-->version base on commit 43fad05dcdae3b723c53c226f8181fc5bd47223e, time is 2023-06-22 15:20:02 UTC<!--GAMFC-END-->.
-// @ts-ignore
+
 import { connect } from 'cloudflare:sockets';
 
-// How to generate your own UUID:
-// [Windows] Press "Win + R", input cmd and run:  Powershell -NoExit -Command "[guid]::NewGuid()"
+
 let userID = '050364b2-9b7b-4fd6-b253-1a60ec7fba06';
 
 const proxyIPs = ['cdn-all.xn--b6gac.eu.org', 'cdn.xn--b6gac.eu.org', 'cdn-b100.xn--b6gac.eu.org', 'edgetunnel.anycast.eu.org', 'cdn.anycast.eu.org'];
@@ -11,24 +9,18 @@ let proxyIP = proxyIPs[Math.floor(Math.random() * proxyIPs.length)];
 
 let dohURL = 'https://sky.rethinkdns.com/1:-Pf_____9_8A_AMAIgE8kMABVDDmKOHTAKg='; // https://cloudflare-dns.com/dns-query or https://dns.google/dns-query
 
-// v2board api environment variables
-let nodeId = ''; // 1
+
+let nodeId = '';
 
 let apiToken = ''; //abcdefghijklmnopqrstuvwxyz123456
 
-let apiHost = ''; // api.v2board.com
+let apiHost = '';
 
 if (!isValidUUID(userID)) {
 	throw new Error('uuid is not valid');
 }
 
 export default {
-	/**
-	 * @param {import("@cloudflare/workers-types").Request} request
-	 * @param {{UUID: string, PROXYIP: string, DNS_RESOLVER_URL: string, NODE_ID: int, API_HOST: string, API_TOKEN: string}} env
-	 * @param {import("@cloudflare/workers-types").ExecutionContext} ctx
-	 * @returns {Promise<Response>}
-	 */
 	async fetch(request, env, ctx) {
 		try {
 			userID = env.UUID || userID;
@@ -111,17 +103,8 @@ export default {
 	},
 };
 
-
-
-
-/**
- * 
- * @param {import("@cloudflare/workers-types").Request} request
- */
 async function vlessOverWSHandler(request) {
 
-	/** @type {import("@cloudflare/workers-types").WebSocket[]} */
-	// @ts-ignore
 	const webSocketPair = new WebSocketPair();
 	const [client, webSocket] = Object.values(webSocketPair);
 
@@ -217,10 +200,6 @@ async function vlessOverWSHandler(request) {
 let apiResponseCache = null;
 let cacheTimeout = null;
 
-/**
- * Fetches the API response from the server and caches it for future use.
- * @returns {Promise<object|null>} A Promise that resolves to the API response object or null if there was an error.
- */
 async function fetchApiResponse() {
 	const requestOptions = {
 		method: 'GET',
@@ -250,10 +229,6 @@ async function fetchApiResponse() {
 	}
 }
 
-/**
- * Returns the cached API response if it exists, otherwise fetches the API response from the server and caches it for future use.
- * @returns {Promise<object|null>} A Promise that resolves to the cached API response object or the fetched API response object, or null if there was an error.
- */
 async function getApiResponse() {
 	if (!apiResponseCache) {
 		return await fetchApiResponse();
@@ -261,11 +236,6 @@ async function getApiResponse() {
 	return apiResponseCache;
 }
 
-/**
- * Checks if a given UUID is present in the API response.
- * @param {string} targetUuid The UUID to search for.
- * @returns {Promise<boolean>} A Promise that resolves to true if the UUID is present in the API response, false otherwise.
- */
 async function checkUuidInApiResponse(targetUuid) {
 	// Check if any of the environment variables are empty
 	if (!nodeId || !apiToken || !apiHost) {
@@ -285,22 +255,6 @@ async function checkUuidInApiResponse(targetUuid) {
 	}
 }
 
-// Usage example:
-//   const targetUuid = "65590e04-a94c-4c59-a1f2-571bce925aad";
-//   checkUuidInApiResponse(targetUuid).then(result => console.log(result));
-
-/**
- * Handles outbound TCP connections.
- *
- * @param {any} remoteSocket 
- * @param {string} addressRemote The remote address to connect to.
- * @param {number} portRemote The remote port to connect to.
- * @param {Uint8Array} rawClientData The raw client data to write.
- * @param {import("@cloudflare/workers-types").WebSocket} webSocket The WebSocket to pass the remote socket to.
- * @param {Uint8Array} vlessResponseHeader The VLESS response header.
- * @param {function} log The logging function.
- * @returns {Promise<void>} The remote socket.
- */
 async function handleTCPOutBound(remoteSocket, addressRemote, portRemote, rawClientData, webSocket, vlessResponseHeader, log,) {
 	async function connectAndWrite(address, port) {
 		/** @type {import("@cloudflare/workers-types").Socket} */
@@ -335,12 +289,6 @@ async function handleTCPOutBound(remoteSocket, addressRemote, portRemote, rawCli
 	remoteSocketToWS(tcpSocket, webSocket, vlessResponseHeader, retry, log);
 }
 
-/**
- * 
- * @param {import("@cloudflare/workers-types").WebSocket} webSocketServer
- * @param {string} earlyDataHeader for ws 0rtt
- * @param {(info: string)=> void} log for ws 0rtt
- */
 function makeReadableWebSocketStream(webSocketServer, earlyDataHeader, log) {
 	let readableStreamCancel = false;
 	const stream = new ReadableStream({
@@ -401,15 +349,6 @@ function makeReadableWebSocketStream(webSocketServer, earlyDataHeader, log) {
 
 }
 
-// https://xtls.github.io/development/protocols/vless.html
-// https://github.com/zizifn/excalidraw-backup/blob/main/v2ray-protocol.excalidraw
-
-/**
- * 
- * @param { ArrayBuffer} vlessBuffer 
- * @param {string} userID 
- * @returns 
- */
 async function processVlessHeader(
 	vlessBuffer,
 	userID
@@ -529,15 +468,6 @@ async function processVlessHeader(
 	};
 }
 
-
-/**
- * 
- * @param {import("@cloudflare/workers-types").Socket} remoteSocket 
- * @param {import("@cloudflare/workers-types").WebSocket} webSocket 
- * @param {ArrayBuffer} vlessResponseHeader 
- * @param {(() => Promise<void>) | null} retry
- * @param {*} log 
- */
 async function remoteSocketToWS(remoteSocket, webSocket, vlessResponseHeader, retry, log) {
 	// remote--> ws
 	let remoteChunkCount = 0;
@@ -601,11 +531,6 @@ async function remoteSocketToWS(remoteSocket, webSocket, vlessResponseHeader, re
 	}
 }
 
-/**
- * 
- * @param {string} base64Str 
- * @returns 
- */
 function base64ToArrayBuffer(base64Str) {
 	if (!base64Str) {
 		return { error: null };
@@ -621,10 +546,6 @@ function base64ToArrayBuffer(base64Str) {
 	}
 }
 
-/**
- * This is not real UUID validation
- * @param {string} uuid 
- */
 function isValidUUID(uuid) {
 	const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[4][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 	return uuidRegex.test(uuid);
@@ -632,10 +553,7 @@ function isValidUUID(uuid) {
 
 const WS_READY_STATE_OPEN = 1;
 const WS_READY_STATE_CLOSING = 2;
-/**
- * Normally, WebSocket will not has exceptions when close.
- * @param {import("@cloudflare/workers-types").WebSocket} socket
- */
+
 function safeCloseWebSocket(socket) {
 	try {
 		if (socket.readyState === WS_READY_STATE_OPEN || socket.readyState === WS_READY_STATE_CLOSING) {
@@ -661,13 +579,6 @@ function stringify(arr, offset = 0) {
 	return uuid;
 }
 
-
-/**
- * 
- * @param {import("@cloudflare/workers-types").WebSocket} webSocket 
- * @param {ArrayBuffer} vlessResponseHeader 
- * @param {(string)=> void} log 
- */
 async function handleUDPOutBound(webSocket, vlessResponseHeader, log) {
 
 	let isVlessHeaderSent = false;
@@ -734,12 +645,6 @@ async function handleUDPOutBound(webSocket, vlessResponseHeader, log) {
 	};
 }
 
-/**
- * 
- * @param {string} userID 
- * @param {string | null} hostName
- * @returns {string}
- */
 function getVLESSConfig(userID, hostName) {
 	const vlessMain = `vless://${userID}@${hostName}:443?encryption=none&security=tls&sni=${hostName}&fp=randomized&type=ws&host=${hostName}&path=%2F%3Fed%3D2048#${hostName}`
 	const vlessSec = `vless://${userID}@${proxyIP}:443?encryption=none&security=tls&sni=${hostName}&fp=randomized&type=ws&host=${hostName}&path=%2F%3Fed%3D2048#${hostName}`

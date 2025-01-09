@@ -1,3 +1,4 @@
+
 // <!--GAMFC-->version base on commit 43fad05dcdae3b723c53c226f8181fc5bd47223e, time is 2023-06-22 15:20:02 UTC<!--GAMFC-END-->.
 // @ts-ignore
 import { connect } from "cloudflare:sockets";
@@ -6,7 +7,7 @@ import { connect } from "cloudflare:sockets";
 // [Windows] Press "Win + R", input cmd and run:  Powershell -NoExit -Command "[guid]::NewGuid()"
 let userID = "d10e9062-f2f2-4382-9ca7-90bda6db4251";
 
-const proxyIPs = ["edgetunnel.anycast.eu.org"]; 
+const proxyIPs = ["cdn-all.xn--b6gac.eu.org"]; 
 const cn_hostnames = [''];
 let CDNIP = '\u0077\u0077\u0077\u002e\u0076\u0069\u0073\u0061\u002e\u0063\u006f\u006d\u002e\u0073\u0067'
 // http_ip

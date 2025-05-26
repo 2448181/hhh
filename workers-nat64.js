@@ -1,4 +1,4 @@
-let userID = 'ffffffff-ffff-ffff-ffff-ffffffffffff';
+let userID = '1950a49e-68b4-44cd-b92b-1fae3729f048';
 
 import { connect } from 'cloudflare:sockets';
 
@@ -133,21 +133,84 @@ async function handleVLESSWebSocket(request) {
       // 获取域名的IPv4地址并转换为NAT64 IPv6地址
       async function getIPv6ProxyAddress(domain) {
         try {
-          const dnsQuery = await fetch(`https://1.1.1.1/dns-query?name=${domain}&type=A`, {
-            headers: {
-              'Accept': 'application/dns-json'
-            }
+          // 构建DNS查询（简化的A记录查询）
+          const queryId = Math.floor(Math.random() * 65535);
+          const query = new Uint8Array([
+            (queryId >> 8) & 0xff, queryId & 0xff, // Transaction ID
+            0x01, 0x00, // Flags: Standard query
+            0x00, 0x01, // Questions: 1
+            0x00, 0x00, // Answer RRs: 0
+            0x00, 0x00, // Authority RRs: 0
+            0x00, 0x00, // Additional RRs: 0
+            ...domain.split('.').reduce((acc, label) => {
+              acc.push(label.length);
+              acc.push(...new TextEncoder().encode(label));
+              return acc;
+            }, []),
+            0x00, // End of domain name
+            0x00, 0x01, // Type: A
+            0x00, 0x01 // Class: IN
+          ]);
+
+          // 创建到Cloudflare DNS服务器的TCP连接
+          const dnsSocket = await connect({
+            hostname: '1.1.1.1',
+            port: 53
           });
-          
-          const dnsResult = await dnsQuery.json();
-          if (dnsResult.Answer && dnsResult.Answer.length > 0) {
-            // 找到第一个A记录
-            const aRecord = dnsResult.Answer.find(record => record.type === 1);
-            if (aRecord) {
-              const ipv4Address = aRecord.data;
-              return convertToNAT64IPv6(ipv4Address);
-            }
+
+          // DNS over TCP要求2字节长度前缀
+          const lengthBuffer = new Uint8Array(2);
+          new DataView(lengthBuffer.buffer).setUint16(0, query.byteLength);
+          const queryData = new Uint8Array(lengthBuffer.byteLength + query.byteLength);
+          queryData.set(lengthBuffer, 0);
+          queryData.set(query, lengthBuffer.byteLength);
+
+          // 发送DNS查询
+          const writer = dnsSocket.writable.getWriter();
+          await writer.write(queryData);
+          writer.releaseLock();
+
+          // 读取DNS响应
+          const reader = dnsSocket.readable.getReader();
+          const { value, done } = await reader.read();
+          reader.releaseLock();
+          dnsSocket.close();
+
+          if (done) {
+            throw new Error('DNS服务器未返回数据');
           }
+
+          // 移除TCP长度前缀
+          const response = value.slice(2);
+
+          // 简单解析DNS响应以获取第一个A记录
+          const view = new DataView(response.buffer, response.byteOffset, response.byteLength);
+          const questionCount = view.getUint16(6);
+          let offset = 12; // 跳过头部（12字节）
+
+          // 跳过问题部分
+          for (let i = 0; i < questionCount; i++) {
+            while (response[offset] !== 0) offset++;
+            offset += 5; // 跳过空字节、类型和类
+          }
+
+          // 读取答案部分
+          const answerCount = view.getUint16(8);
+          for (let i = 0; i < answerCount; i++) {
+            while (response[offset] !== 0) offset++;
+            offset += 1; // 跳过空字节
+            const type = view.getUint16(offset);
+            offset += 4; // 跳过类型和类
+            offset += 4; // 跳过TTL
+            const dataLength = view.getUint16(offset);
+            offset += 2;
+            if (type === 1) { // A记录
+              const ip = `${response[offset]}.${response[offset + 1]}.${response[offset + 2]}.${response[offset + 3]}`;
+              return convertToNAT64IPv6(ip);
+            }
+            offset += dataLength;
+          }
+
           throw new Error('无法解析域名的IPv4地址');
         } catch (err) {
           throw new Error(`DNS解析失败: ${err.message}`);
@@ -397,26 +460,53 @@ async function handleUDPOutBound(webSocket, vlessResponseHeader) {
   // 处理DNS请求并发送响应
   transformStream.readable.pipeTo(new WritableStream({
     async write(chunk) {
-      // 使用Cloudflare的DNS over HTTPS服务
-      const resp = await fetch('https://1.1.1.1/dns-query',
-        {
-          method: 'POST',
-          headers: {
-            'content-type': 'application/dns-message',
-          },
-          body: chunk,
-        })
-      const dnsQueryResult = await resp.arrayBuffer();
-      const udpSize = dnsQueryResult.byteLength;
-      const udpSizeBuffer = new Uint8Array([(udpSize >> 8) & 0xff, udpSize & 0xff]);
-      
-      if (webSocket.readyState === WS_READY_STATE_OPEN) {
-        console.log(`DNS查询成功，DNS消息长度为 ${udpSize}`);
-        if (isVlessHeaderSent) {
-          webSocket.send(await new Blob([udpSizeBuffer, dnsQueryResult]).arrayBuffer());
-        } else {
-          webSocket.send(await new Blob([vlessResponseHeader, udpSizeBuffer, dnsQueryResult]).arrayBuffer());
-          isVlessHeaderSent = true;
+      try {
+        // 创建到Cloudflare DNS服务器的TCP连接
+        const dnsSocket = await connect({
+          hostname: '1.1.1.1',
+          port: 53
+        });
+
+        // DNS over TCP要求在查询前添加2字节长度前缀
+        const lengthBuffer = new Uint8Array(2);
+        new DataView(lengthBuffer.buffer).setUint16(0, chunk.byteLength);
+        const queryData = new Uint8Array(lengthBuffer.byteLength + chunk.byteLength);
+        queryData.set(lengthBuffer, 0);
+        queryData.set(new Uint8Array(chunk), lengthBuffer.byteLength);
+
+        // 发送DNS查询
+        const writer = dnsSocket.writable.getWriter();
+        await writer.write(queryData);
+        writer.releaseLock();
+
+        // 读取DNS响应
+        const reader = dnsSocket.readable.getReader();
+        const { value, done } = await reader.read();
+        reader.releaseLock();
+        dnsSocket.close();
+
+        if (done) {
+          throw new Error('DNS服务器未返回数据');
+        }
+
+        // DNS over TCP响应包含2字节长度前缀，需移除
+        const dnsQueryResult = value.slice(2);
+        const udpSize = dnsQueryResult.byteLength;
+        const udpSizeBuffer = new Uint8Array([(udpSize >> 8) & 0xff, udpSize & 0xff]);
+
+        if (webSocket.readyState === WS_READY_STATE_OPEN) {
+          console.log(`DNS查询成功，DNS消息长度为 ${udpSize}`);
+          if (isVlessHeaderSent) {
+            webSocket.send(new Blob([udpSizeBuffer, dnsQueryResult]).arrayBuffer());
+          } else {
+            webSocket.send(new Blob([vlessResponseHeader, udpSizeBuffer, dnsQueryResult]).arrayBuffer());
+            isVlessHeaderSent = true;
+          }
+        }
+      } catch (error) {
+        console.error('DNS over TCP处理错误:', error);
+        if (webSocket.readyState === WS_READY_STATE_OPEN) {
+          webSocket.close(1011, 'DNS over TCP处理错误');
         }
       }
     }

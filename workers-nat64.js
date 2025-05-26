@@ -1,3 +1,9 @@
+/*
+ * This code is based on the original work by t.me/CF_NAT and zizifn.
+ * Modifications have been made to support DNS over TCP and other enhancements.
+ * I sincerely express my gratitude for the foundational contributions that made this work possible.
+ */
+
 let userID = 'ffffffff-ffff-ffff-ffff-ffffffffffff';
 
 import { connect } from 'cloudflare:sockets';

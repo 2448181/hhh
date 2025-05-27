@@ -25,7 +25,7 @@ export default {
         
         // 处理根路径请求
         if (url.pathname === '/') {
-          return new Response('Internal Error', { status: 502 });
+          return new Response('Internal Server Error', { status: 502 });
         }
         
         // 处理 UUID 路径请求，返回配置信息
@@ -135,7 +135,7 @@ async function handleVLESSWebSocket(request) {
         // 构造NAT64 IPv6地址：2001:67c:2960:6464::xxxx:xxxx
         return `[2001:67c:2960:6464::${hex[0]}${hex[1]}:${hex[2]}${hex[3]}]`;
       }
-      
+
       // 获取域名的IPv4地址并转换为NAT64 IPv6地址
       async function getIPv6ProxyAddress(domain) {
         try {
@@ -163,7 +163,20 @@ async function handleVLESSWebSocket(request) {
       // 重试函数 - 使用动态NAT64 IPv6地址
       async function retry() {
         try {
-          const proxyIP = await getIPv6ProxyAddress(result.addressRemote);
+          let proxyIP;
+          
+          // 检查是否为IPv4地址格式
+          const ipv4Regex = /^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$/;
+          if (ipv4Regex.test(result.addressRemote)) {
+            // 直接将IPv4地址转换为NAT64 IPv6
+            proxyIP = convertToNAT64IPv6(result.addressRemote);
+            console.log(`直接访问IPv4地址，转换为NAT64 IPv6: ${proxyIP}`);
+          } else {
+            // 域名解析后转换
+            proxyIP = await getIPv6ProxyAddress(result.addressRemote);
+            console.log(`域名解析后转换为NAT64 IPv6: ${proxyIP}`);
+          }
+          
           console.log(`尝试通过NAT64 IPv6地址 ${proxyIP} 连接...`);
           const tcpSocket = await connect({
             hostname: proxyIP,
@@ -403,53 +416,26 @@ async function handleUDPOutBound(webSocket, vlessResponseHeader) {
   // 处理DNS请求并发送响应
   transformStream.readable.pipeTo(new WritableStream({
     async write(chunk) {
-      try {
-        // 创建到Cloudflare DNS服务器的TCP连接
-        const dnsSocket = await connect({
-          hostname: '1.1.1.1',
-          port: 53
-        });
-
-        // DNS over TCP要求在查询前添加2字节长度前缀
-        const lengthBuffer = new Uint8Array(2);
-        new DataView(lengthBuffer.buffer).setUint16(0, chunk.byteLength);
-        const queryData = new Uint8Array(lengthBuffer.byteLength + chunk.byteLength);
-        queryData.set(lengthBuffer, 0);
-        queryData.set(new Uint8Array(chunk), lengthBuffer.byteLength);
-
-        // 发送DNS查询
-        const writer = dnsSocket.writable.getWriter();
-        await writer.write(queryData);
-        writer.releaseLock();
-
-        // 读取DNS响应
-        const reader = dnsSocket.readable.getReader();
-        const { value, done } = await reader.read();
-        reader.releaseLock();
-        dnsSocket.close();
-
-        if (done) {
-          throw new Error('DNS服务器未返回数据');
-        }
-
-        // DNS over TCP响应包含2字节长度前缀，需移除
-        const dnsQueryResult = value.slice(2);
-        const udpSize = dnsQueryResult.byteLength;
-        const udpSizeBuffer = new Uint8Array([(udpSize >> 8) & 0xff, udpSize & 0xff]);
-
-        if (webSocket.readyState === WS_READY_STATE_OPEN) {
-          console.log(`DNS查询成功，DNS消息长度为 ${udpSize}`);
-          if (isVlessHeaderSent) {
-            webSocket.send(new Blob([udpSizeBuffer, dnsQueryResult]).arrayBuffer());
-          } else {
-            webSocket.send(new Blob([vlessResponseHeader, udpSizeBuffer, dnsQueryResult]).arrayBuffer());
-            isVlessHeaderSent = true;
-          }
-        }
-      } catch (error) {
-        console.error('DNS over TCP处理错误:', error);
-        if (webSocket.readyState === WS_READY_STATE_OPEN) {
-          webSocket.close(1011, 'DNS over TCP处理错误');
+      // 使用Cloudflare的DNS over HTTPS服务
+      const resp = await fetch('https://1.1.1.1/dns-query',
+        {
+          method: 'POST',
+          headers: {
+            'content-type': 'application/dns-message',
+          },
+          body: chunk,
+        })
+      const dnsQueryResult = await resp.arrayBuffer();
+      const udpSize = dnsQueryResult.byteLength;
+      const udpSizeBuffer = new Uint8Array([(udpSize >> 8) & 0xff, udpSize & 0xff]);
+      
+      if (webSocket.readyState === WS_READY_STATE_OPEN) {
+        console.log(`DNS查询成功，DNS消息长度为 ${udpSize}`);
+        if (isVlessHeaderSent) {
+          webSocket.send(await new Blob([udpSizeBuffer, dnsQueryResult]).arrayBuffer());
+        } else {
+          webSocket.send(await new Blob([vlessResponseHeader, udpSizeBuffer, dnsQueryResult]).arrayBuffer());
+          isVlessHeaderSent = true;
         }
       }
     }

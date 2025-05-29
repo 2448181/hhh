@@ -1,5 +1,5 @@
 {
   "name": "edgetunnel",
   "compatibility_date": "2025-05-29",
-  "main": "src/_worker.js"
+  "main": "_worker.js"
 }

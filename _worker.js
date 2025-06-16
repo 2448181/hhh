@@ -189,6 +189,7 @@ export default {
                             headers: {
                                 "Content-Type": "text/html;charset=utf-8",
                                 "Profile-Update-Interval": "6",
+                                "profile-web-page-url": 路径,
                                 "Subscription-Userinfo": `upload=${pagesSum}; download=${workersSum}; total=${total}; expire=${expire}`,
                                 "Cache-Control": "no-store",
                             }
@@ -200,6 +201,7 @@ export default {
                                 "Content-Disposition": `attachment; filename=${FileName}; filename*=utf-8''${encodeURIComponent(FileName)}`,
                                 //"Content-Type": "text/plain;charset=utf-8",
                                 "Profile-Update-Interval": "6",
+                                "profile-web-page-url": 路径,
                                 "Subscription-Userinfo": `upload=${pagesSum}; download=${workersSum}; total=${total}; expire=${expire}`,
                             }
                         });

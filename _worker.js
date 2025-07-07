@@ -159,7 +159,7 @@ export default {
                 else SCV = 'true';
                 const 路径 = url.pathname.toLowerCase();
                 const url302 = env.URL302 || env.url302 || URL302
-				const murl = env.url || env.URL || MURL
+		const murl = env.url || env.URL || MURL
                 if (路径 == '/') {
                     if (url302 !== '') return Response.redirect(url302, 302);
                     else if (murl !== '') return await 代理URL(murl, url);

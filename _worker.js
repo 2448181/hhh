@@ -1495,7 +1495,7 @@ async function 生成配置信息(userID, hostName, sub, UA, RproxyIP, _url, fak
             let cfips = ['104.16.0.0/13'];
             // 请求 Cloudflare CIDR 列表
             try {
-                const response = await fetch('https://raw.bgithub.xyz/cmliu/cmliu/main/CF-CIDR.txt');
+                const response = await fetch('\u0068\u0074\u0074\u0070\u0073\u003a\u002f\u002f\u0072\u0061\u0077\u002e\u0062\u0067\u0069\u0074\u0068\u0075\u0062\u002e\u0078\u0079\u007a\u002f\u0063\u006d\u006c\u0069\u0075\u002f\u0063\u006d\u006c\u0069\u0075\u002f\u006d\u0061\u0069\u006e\u002f\u0043\u0046\u002d\u0043\u0049\u0044\u0052\u002e\u0074\u0078\u0074');
                 if (response.ok) {
                     const data = await response.text();
                     cfips = await 整理(data);
@@ -1640,7 +1640,7 @@ async function 生成配置信息(userID, hostName, sub, UA, RproxyIP, _url, fak
                     <strong>6.</strong> 如需指定多个参数则需要使用'&'做间隔，例如：<br>
                     &nbsp;&nbsp;https://${proxyhost}${hostName}/${uuid}?sub=sub.google.com<strong>&</strong>proxyip=proxyip.cmliussss.net<br>
                 </div>
-            <script src="https://cdn.jsdelivr.net/npm/@keeex/qrcodejs-kx@1.0.2/qrcode.min.js"></script>
+            <script src="\u0068\u0074\u0074\u0070\u0073\u003a\u002f\u002f\u0063\u0064\u006e\u002e\u006a\u0073\u0064\u0065\u006c\u0069\u0076\u0072\u002e\u006e\u0065\u0074\u002f\u006e\u0070\u006d\u002f\u0040\u006b\u0065\u0065\u0065\u0078\u002f\u0071\u0072\u0063\u006f\u0064\u0065\u006a\u0073\u002d\u006b\u0078\u0040\u0031\u002e\u0030\u002e\u0032\u002f\u0071\u0072\u0063\u006f\u0064\u0065\u002e\u006d\u0069\u006e\u002e\u006a\u0073"></script>
             <script>
             function copyToClipboard(text, qrcode) {
                 navigator.clipboard.writeText(text).then(() => {
@@ -2714,25 +2714,25 @@ async function bestIP(request, env, txt = 'ADD.txt') {
             let response;
             if (ipSource === 'as13335') {
                 // AS13335列表
-                response = await fetch('https://raw.bgithub.xyz/ipverse/asn-ip/master/as/13335/ipv4-aggregated.txt');
+                response = await fetch('\u0068\u0074\u0074\u0070\u0073\u003a\u002f\u002f\u0072\u0061\u0077\u002e\u0062\u0067\u0069\u0074\u0068\u0075\u0062\u002e\u0078\u0079\u007a\u002f\u0069\u0070\u0076\u0065\u0072\u0073\u0065\u002f\u0061\u0073\u006e\u002d\u0069\u0070\u002f\u006d\u0061\u0073\u0074\u0065\u0072\u002f\u0061\u0073\u002f\u0031\u0033\u0033\u0033\u0035\u002f\u0069\u0070\u0076\u0034\u002d\u0061\u0067\u0067\u0072\u0065\u0067\u0061\u0074\u0065\u0064\u002e\u0074\u0078\u0074');
             } else if (ipSource === 'as209242') {
                 // AS209242列表
-                response = await fetch('https://raw.bgithub.xyz/ipverse/asn-ip/master/as/209242/ipv4-aggregated.txt');
+                response = await fetch('\u0068\u0074\u0074\u0070\u0073\u003a\u002f\u002f\u0072\u0061\u0077\u002e\u0062\u0067\u0069\u0074\u0068\u0075\u0062\u002e\u0078\u0079\u007a\u002f\u0069\u0070\u0076\u0065\u0072\u0073\u0065\u002f\u0061\u0073\u006e\u002d\u0069\u0070\u002f\u006d\u0061\u0073\u0074\u0065\u0072\u002f\u0061\u0073\u002f\u0032\u0030\u0039\u0032\u0034\u0032\u002f\u0069\u0070\u0076\u0034\u002d\u0061\u0067\u0067\u0072\u0065\u0067\u0061\u0074\u0065\u0064\u002e\u0074\u0078\u0074');
             } else if (ipSource === 'as24429') {
                 // AS24429列表
-                response = await fetch('https://raw.bgithub.xyz/ipverse/asn-ip/master/as/24429/ipv4-aggregated.txt');
+                response = await fetch('\u0068\u0074\u0074\u0070\u0073\u003a\u002f\u002f\u0072\u0061\u0077\u002e\u0062\u0067\u0069\u0074\u0068\u0075\u0062\u002e\u0078\u0079\u007a\u002f\u0069\u0070\u0076\u0065\u0072\u0073\u0065\u002f\u0061\u0073\u006e\u002d\u0069\u0070\u002f\u006d\u0061\u0073\u0074\u0065\u0072\u002f\u0061\u0073\u002f\u0032\u0034\u0034\u0032\u0039\u002f\u0069\u0070\u0076\u0034\u002d\u0061\u0067\u0067\u0072\u0065\u0067\u0061\u0074\u0065\u0064\u002e\u0074\u0078\u0074');
             } else if (ipSource === 'as35916') {
                 // AS35916列表
-                response = await fetch('https://raw.bgithub.xyz/ipverse/asn-ip/master/as/35916/ipv4-aggregated.txt');
+                response = await fetch('\u0068\u0074\u0074\u0070\u0073\u003a\u002f\u002f\u0072\u0061\u0077\u002e\u0062\u0067\u0069\u0074\u0068\u0075\u0062\u002e\u0078\u0079\u007a\u002f\u0069\u0070\u0076\u0065\u0072\u0073\u0065\u002f\u0061\u0073\u006e\u002d\u0069\u0070\u002f\u006d\u0061\u0073\u0074\u0065\u0072\u002f\u0061\u0073\u002f\u0033\u0035\u0039\u0031\u0036\u002f\u0069\u0070\u0076\u0034\u002d\u0061\u0067\u0067\u0072\u0065\u0067\u0061\u0074\u0065\u0064\u002e\u0074\u0078\u0074');
             } else if (ipSource === 'as199524') {
                 // AS199524列表
-                response = await fetch('https://raw.bgithub.xyz/ipverse/asn-ip/master/as/199524/ipv4-aggregated.txt');
+                response = await fetch('\u0068\u0074\u0074\u0070\u0073\u003a\u002f\u002f\u0072\u0061\u0077\u002e\u0062\u0067\u0069\u0074\u0068\u0075\u0062\u002e\u0078\u0079\u007a\u002f\u0069\u0070\u0076\u0065\u0072\u0073\u0065\u002f\u0061\u0073\u006e\u002d\u0069\u0070\u002f\u006d\u0061\u0073\u0074\u0065\u0072\u002f\u0061\u0073\u002f\u0031\u0039\u0039\u0035\u0032\u0034\u002f\u0069\u0070\u0076\u0034\u002d\u0061\u0067\u0067\u0072\u0065\u0067\u0061\u0074\u0065\u0064\u002e\u0074\u0078\u0074');
             } else if (ipSource === 'cm') {
                 // CM整理列表
-                response = await fetch('https://raw.bgithub.xyz/cmliu/cmliu/main/CF-CIDR.txt');
+                response = await fetch('\u0068\u0074\u0074\u0070\u0073\u003a\u002f\u002f\u0072\u0061\u0077\u002e\u0062\u0067\u0069\u0074\u0068\u0075\u0062\u002e\u0078\u0079\u007a\u002f\u0063\u006d\u006c\u0069\u0075\u002f\u0063\u006d\u006c\u0069\u0075\u002f\u006d\u0061\u0069\u006e\u002f\u0043\u0046\u002d\u0043\u0049\u0044\u0052\u002e\u0074\u0078\u0074');
             } else if (ipSource === 'proxyip') {
                 // 反代IP列表 (直接IP，非CIDR)
-                response = await fetch('https://raw.bgithub.xyz/cmliu/ACL4SSR/main/baipiao.txt');
+                response = await fetch('\u0068\u0074\u0074\u0070\u0073\u003a\u002f\u002f\u0072\u0061\u0077\u002e\u0062\u0067\u0069\u0074\u0068\u0075\u0062\u002e\u0078\u0079\u007a\u002f\u0063\u006d\u006c\u0069\u0075\u002f\u0041\u0043\u004c\u0034\u0053\u0053\u0052\u002f\u006d\u0061\u0069\u006e\u002f\u0062\u0061\u0069\u0070\u0069\u0061\u006f\u002e\u0074\u0078\u0074');
                 const text = response.ok ? await response.text() : '';
 
                 // 解析并过滤符合端口的IP
@@ -2762,7 +2762,7 @@ async function bestIP(request, env, txt = 'ADD.txt') {
                 }
             } else {
                 // CF官方列表 (默认)
-                response = await fetch('https://www.cloudflare.com/ips-v4/');
+                response = await fetch('\u0068\u0074\u0074\u0070\u0073\u003a\u002f\u002f\u0077\u0077\u0077\u002e\u0063\u006c\u006f\u0075\u0064\u0066\u006c\u0061\u0072\u0065\u002e\u0063\u006f\u006d\u002f\u0069\u0070\u0073\u002d\u0076\u0034\u002f');
             }
 
             const text = response.ok ? await response.text() : `173.245.48.0/20
@@ -3522,7 +3522,7 @@ async function bestIP(request, env, txt = 'ADD.txt') {
         // 新增：加载Cloudflare位置信息
         async function loadCloudflareLocations() {
             try {
-                const response = await fetch('https://speed.cloudflare.com/locations');
+                const response = await fetch('\u0068\u0074\u0074\u0070\u0073\u003a\u002f\u002f\u0073\u0070\u0065\u0065\u0064\u002e\u0063\u006c\u006f\u0075\u0064\u0066\u006c\u0061\u0072\u0065\u002e\u0063\u006f\u006d\u002f\u006c\u006f\u0063\u0061\u0074\u0069\u006f\u006e\u0073');
                 if (response.ok) {
                     const locations = await response.json();
                     // 转换为以iata为key的对象，便于快速查找
@@ -4358,7 +4358,7 @@ async function getUsage(accountId, email, apikey, apitoken, all = 100000) {
     async function getAccountId(email, apikey) {
         console.log('正在获取账户信息...');
 
-        const response = await fetch("https://api.cloudflare.com/client/v4/accounts", {
+        const response = await fetch("\u0068\u0074\u0074\u0070\u0073\u003a\u002f\u002f\u0061\u0070\u0069\u002e\u0063\u006c\u006f\u0075\u0064\u0066\u006c\u0061\u0072\u0065\u002e\u0063\u006f\u006d\u002f\u0063\u006c\u0069\u0065\u006e\u0074\u002f\u0076\u0034\u002f\u0061\u0063\u0063\u006f\u0075\u006e\u0074\u0073", {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
@@ -4455,7 +4455,7 @@ async function getUsage(accountId, email, apikey, apitoken, all = 100000) {
         }
 
         // 向 Cloudflare GraphQL API 发送请求，获取今日使用量
-        const response = await fetch("https://api.cloudflare.com/client/v4/graphql", {
+        const response = await fetch("\u0068\u0074\u0074\u0070\u0073\u003a\u002f\u002f\u0061\u0070\u0069\u002e\u0063\u006c\u006f\u0075\u0064\u0066\u006c\u0061\u0072\u0065\u002e\u0063\u006f\u006d\u002f\u0063\u006c\u0069\u0065\u006e\u0074\u002f\u0076\u0034\u002f\u0067\u0072\u0061\u0070\u0068\u0071\u006c", {
             method: "POST",
             headers: headers,
             body: JSON.stringify({
@@ -4568,4 +4568,3 @@ async function nginx() {
 	`
     return text;
 }
-

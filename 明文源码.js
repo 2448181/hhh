@@ -1,7 +1,7 @@
 
 import { connect } from 'cloudflare:sockets';
 
-let userID = '';
+let userID = '04e87138-bbba-473b-9ec1-50856bf7e4d1';
 let proxyIP = '';
 //let sub = '';
 let subConverter = atob('U1VCQVBJLkNNTGl1c3Nzcy5uZXQ=');
@@ -2543,3 +2543,4 @@ async function resolveToIPv6(target) {
 		return `解析失败: ${error.message}`;
 	}
 }
+

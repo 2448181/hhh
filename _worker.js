@@ -1,5 +1,4 @@
-﻿
-import { connect } from 'cloudflare:sockets';
+﻿import { connect } from 'cloudflare:sockets';
 
 let userID = '';
 let proxyIP = '';
@@ -14,7 +13,7 @@ let parsedSocks5Address = {};
 let enableSocks = false;
 let enableHttp = false;
 let noTLS = 'false';
-const expire = 4102329600;//2099-12-31
+const expire = 4000000000;//2099-12-31
 let proxyIPs;
 let socks5s;
 let go2Socks5s = [
@@ -1863,7 +1862,7 @@ async function KV(request, env, txt = 'ADD.txt') {
             </head>
             <body>
                 ################################################################<br>
-                ${FileName} 优选订阅列表:<br>
+                ${FileName} 优选订阅表单:<br>
                 ---------------------------------------------------------------<br>
                 &nbsp;&nbsp;<strong><a href="javascript:void(0);" id="noticeToggle" onclick="toggleNotice()">注意事项∨</a></strong><br>
                 <div id="noticeContent" class="notice-content">
@@ -1875,15 +1874,15 @@ async function KV(request, env, txt = 'ADD.txt') {
                         placeholder="${decodeURIComponent(atob('QUREJUU3JUE0JUJBJUU0JUJFJThCJUVGJUJDJTlBCnZpc2EuY24lMjMlRTQlQkMlOTglRTklODAlODklRTUlOUYlOUYlRTUlOTAlOEQKMTI3LjAuMC4xJTNBMTIzNCUyM0NGbmF0CiU1QjI2MDYlM0E0NzAwJTNBJTNBJTVEJTNBMjA1MyUyM0lQdjYKCiVFNiVCMyVBOCVFNiU4NCU4RiVFRiVCQyU5QQolRTYlQUYlOEYlRTglQTElOEMlRTQlQjglODAlRTQlQjglQUElRTUlOUMlQjAlRTUlOUQlODAlRUYlQkMlOEMlRTYlQTAlQkMlRTUlQkMlOEYlRTQlQjglQkElMjAlRTUlOUMlQjAlRTUlOUQlODAlM0ElRTclQUIlQUYlRTUlOEYlQTMlMjMlRTUlQTQlODclRTYlQjMlQTgKSVB2NiVFNSU5QyVCMCVFNSU5RCU4MCVFOSU5QyU4MCVFOCVBNiU4MSVFNyU5NCVBOCVFNCVCOCVBRCVFNiU4QiVBQyVFNSU4RiVCNyVFNiU4QiVBQyVFOCVCNSVCNyVFNiU5RCVBNSVFRiVCQyU4QyVFNSVBNiU4MiVFRiVCQyU5QSU1QjI2MDYlM0E0NzAwJTNBJTNBJTVEJTNBMjA1MwolRTclQUIlQUYlRTUlOEYlQTMlRTQlQjglOEQlRTUlODYlOTklRUYlQkMlOEMlRTklQkIlOTglRTglQUUlQTQlRTQlQjglQkElMjA0NDMlMjAlRTclQUIlQUYlRTUlOEYlQTMlRUYlQkMlOEMlRTUlQTYlODIlRUYlQkMlOUF2aXNhLmNuJTIzJUU0JUJDJTk4JUU5JTgwJTg5JUU1JTlGJTlGJUU1JTkwJThECgoKQUREQVBJJUU3JUE0JUJBJUU0JUJFJThCJUVGJUJDJTlBCmh0dHBzJTNBJTJGJTJGcmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSUyRmNtbGl1JTJGV29ya2VyVmxlc3Myc3ViJTJGcmVmcyUyRmhlYWRzJTJGbWFpbiUyRmFkZHJlc3Nlc2FwaS50eHQKCiVFNiVCMyVBOCVFNiU4NCU4RiVFRiVCQyU5QUFEREFQSSVFNyU5QiVCNCVFNiU4RSVBNSVFNiVCNyVCQiVFNSU4QSVBMCVFNyU5QiVCNCVFOSU5MyVCRSVFNSU4RCVCMyVFNSU4RiVBRg=='))}"
                         id="content">${content}</textarea>
                     <div class="save-container">
-                        <button class="back-btn" onclick="goBack()">返回配置页</button>
-                        <button class="bestip-btn" onclick="goBestIP()">在线优选IP</button>
-                        <button class="save-btn" onclick="saveContent(this)">保存</button>
+                        <button class="back-btn" onclick="goBack()">回配置页</button>
+                        <button class="bestip-btn" onclick="goBestIP()">优选IP</button>
+                        <button class="save-btn" onclick="saveContent(this)">存</button>
                         <span class="save-status" id="saveStatus"></span>
                     </div>
                     <br>
                     ################################################################<br>
                     ${cmad}
-                    ` : '<p>未绑定KV空间</p>'}
+                    ` : '<p>未绑KV空间</p>'}
                 </div>
         
                 <script>
@@ -4108,13 +4107,7 @@ async function nginx() {
 	<html>
 	<head>
 	<title>Welcome to nginx!</title>
-	<style>
-		body {
-			width: 35em;
-			margin: 0 auto;
-			font-family: Tahoma, Verdana, Arial, sans-serif;
-		}
-	</style>
+
 	</head>
 	<body>
 	<h1>Welcome to nginx!</h1>
@@ -6042,3 +6035,4 @@ function config_Html(token = "test", proxyhost = "") {
     return html;
 
 }
+

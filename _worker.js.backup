@@ -24,7 +24,7 @@ let go2Socks5s = [
     '*.loadshare.org',
 ];
 let addresses = [];
-let addressesapi = ['https://raw.githubusercontent.com/feiyuegege/ftt/refs/heads/main/formatted_result.txt'];
+let addressesapi = [];
 let addressesnotls = [];
 let addressesnotlsapi = [];
 let addressescsv = [];
@@ -7197,4 +7197,5 @@ function config_Html(token = "test", proxyhost = "") {
     return html;
 
 }
+
 
